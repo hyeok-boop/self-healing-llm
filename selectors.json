@@ -1,0 +1,5 @@
+{
+  "region_tokyo": "[data-testid='region-tokyo']",
+  "region_osaka": "[data-testid='region-osaka']",
+  "selected_result": "#result"
+}
