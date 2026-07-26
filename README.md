@@ -1,14 +1,12 @@
-# 자가치유 LLM — Playwright Self-Healing Demo
+# 자가치유 LLM
 
 Playwright 자동화에서 **셀렉터 깨짐**이 나면, 로컬 LLM(Ollama)이 DOM을 분석해 새 셀렉터를 제안·패치하고 테스트를 다시 통과시키는 데모입니다.
 
-> QA 실무에서 흔한 pain point(UI 변경 → 테스트 유지보수 비용)를 로컬 LLM으로 줄이는 흐름을 보여줍니다.
+QA 실무에서 흔한 pain point(UI 변경 → 테스트 유지보수 비용)를 로컬 LLM으로 줄이는 흐름을 보여줍니다.
 
 ## Demo
 
-https://github.com/user-attachments/assets/PLACEHOLDER
-
-또는 로컬 파일: [`docs/demo/self-heal-demo.mp4`](docs/demo/self-heal-demo.mp4)
+https://github.com/hyeok-boop/self-healing-llm/raw/main/docs/demo/self-heal-demo.mp4
 
 **시연 흐름**
 1. 정상 테스트 통과
@@ -38,7 +36,7 @@ heal.py  →  Failure API (:3001)  →  Ollama (:11434)
 | 자동화 | Playwright + pytest |
 | API | Node.js + Express |
 | LLM | Ollama + qwen2.5-coder:7b (로컬) |
-| 대상 앱 | Toridoc / Japan (지역 선택 UI) |
+| 대상 | Toridoc / Japan 앱 — 지역 선택 UI |
 
 ## Engineering Decisions
 
@@ -50,14 +48,8 @@ heal.py  →  Failure API (:3001)  →  Ollama (:11434)
 ## Quick Start
 
 ```bash
-# Ollama + 모델
 open -a Ollama
-ollama pull qwen2.5-coder:7b
-
-# API 서버
 ./run.sh api
-
-# 데모 (통과 → 깨짐 → 치유 → 재통과)
 ./demo_heal.sh
 ```
 
