@@ -1,0 +1,35 @@
+{
+  "total": 3,
+  "passed": 3,
+  "failed": 0,
+  "success_rate_percent": 100.0,
+  "cases": [
+    {
+      "name": "testid_rename",
+      "description": "data-testid 변경 (region-tokyo → region-tokyo-v2)",
+      "broken_selector": "[data-testid='region-tokyo']",
+      "healed": true,
+      "passed": true,
+      "suggested_selector": "[data-testid='region-tokyo-v2']",
+      "error": null
+    },
+    {
+      "name": "id_rename",
+      "description": "id 변경 (region-osaka → city-osaka, testid 제거)",
+      "broken_selector": "#region-osaka",
+      "healed": true,
+      "passed": true,
+      "suggested_selector": "#city-osaka",
+      "error": null
+    },
+    {
+      "name": "structure_move",
+      "description": "class/DOM 구조 변경 (card → region-btn + wrap)",
+      "broken_selector": "a.card[href='#tokyo']",
+      "healed": true,
+      "passed": true,
+      "suggested_selector": "[data-testid='region-tokyo']",
+      "error": null
+    }
+  ]
+}
