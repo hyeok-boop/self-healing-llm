@@ -1,21 +1,19 @@
 # 자가치유 LLM
 
-Playwright 자동화에서 **셀렉터 깨짐**이 나면, 로컬 LLM(Ollama)이 DOM을 분석해 새 셀렉터를 제안·패치하고 테스트를 다시 통과시키는 데모입니다.
+Playwright 테스트가 셀렉터 때문에 깨지면, 로컬 LLM(Ollama)이 DOM을 보고 새 셀렉터를 제안하고 `selectors.json`을 고친 뒤 다시 돌립니다.
 
-QA 실무에서 흔한 pain point(UI 변경 → 테스트 유지보수 비용)를 로컬 LLM으로 줄이는 흐름을 보여줍니다.
+토리닥(Japan) 앱의 **지역 선택** UI를 기준으로 한 데모입니다. 외부 API 없이 로컬에서만 추론합니다.
 
-## Demo
+## 데모 영상
 
 https://github.com/hyeok-boop/self-healing-llm/raw/main/docs/demo/self-heal-demo.mp4
 
-**시연 흐름**
-1. 정상 테스트 통과
-2. 앱의 `data-testid` 의도적 변경 (`region-tokyo` → `region-tokyo-v2`)
-3. 재실행 → 실패 감지
-4. 로컬 LLM이 DOM 분석 → 새 셀렉터 제안 → `selectors.json` 자동 패치
-5. 재실행 → 통과
+1. 정상 통과  
+2. `data-testid` 의도적 변경  
+3. 실패 → LLM이 DOM 분석 → 셀렉터 패치  
+4. 재실행 통과  
 
-## Architecture
+## 구조
 
 ```
 Playwright (pytest)
@@ -26,34 +24,70 @@ heal.py  →  Failure API (:3001)  →  Ollama (:11434)
     └──── suggested_selector ◄───────────┘
               │
               ▼
-        selectors.json 갱신 → 재시도
+        selectors.json 갱신 → 재시도(1회)
 ```
 
-## Tech Stack
+## 치유 성공률 (로컬 측정)
+
+| 케이스 | 변경 내용 | 결과 |
+|--------|-----------|------|
+| testid_rename | `data-testid` 변경 | 통과 |
+| id_rename | `id` 변경 (+ testid 제거) | 통과 |
+| structure_move | class/DOM 구조 변경 | 통과 |
+
+**성공률: 3/3 (100%)** — `./run.sh eval` 로 재측정 가능. 리포트: `docs/heal-eval-report.json`
+
+## 안전장치
+
+- 셀렉터 문제만 고침. 타이밍/실제 버그는 자동 패치하지 않음
+- 제안 셀렉터가 현재 DOM에 있을 때만 저장
+- 셀렉터당 치유 재시도 1회 (무한 루프 방지)
+
+## 기술 스택
 
 | 구분 | 기술 |
 |------|------|
 | 자동화 | Playwright + pytest |
 | API | Node.js + Express |
-| LLM | Ollama + qwen2.5-coder:7b (로컬) |
-| 대상 | Toridoc / Japan 앱 — 지역 선택 UI |
+| LLM | Ollama + qwen2.5-coder:7b (로컬 추론) |
+| CI | GitHub Actions **self-hosted runner** (M1, localhost Ollama) |
 
-## Engineering Decisions
-
-- **실패 분류**: 셀렉터 문제 / 타임아웃 / 실제 버그를 구분. 전부 자동 패치하지 않음
-- **신뢰도 게이트**: 제안 셀렉터가 DOM에 실제로 존재할 때만 적용
-- **로컬 LLM**: 외부 API 없이 동작 (보안·오프라인)
-- **재시도 제한**: 셀렉터당 1회 치유 후 재시도 (무한 루프 방지)
-
-## Quick Start
+## 빠른 시작
 
 ```bash
-open -a Ollama
+git clone https://github.com/hyeok-boop/self-healing-llm.git
+cd self-healing-llm
+chmod +x setup.sh run.sh scripts/*.sh
+./setup.sh
+
+# 터미널 1
 ./run.sh api
-./demo_heal.sh
+
+# 터미널 2
+./run.sh demo    # 한 방 데모
+./run.sh eval    # 실패 케이스 3종 + 성공률
 ```
 
-## Limits & Next
+## CI/CD (self-hosted)
 
-- 현재는 지역 선택 UI 픽스처 기준 데모 (Flutter web 연동은 확장 가능)
-- 실패 이력 DB·셀렉터 취약점 통계는 향후 개선 방향
+클라우드 runner는 로컬 Ollama(`localhost:11434`)에 접근할 수 없어서, **M1을 self-hosted runner**로 등록합니다.
+
+```bash
+# 1) 러너 등록 (최초 1회)
+./scripts/setup_runner.sh
+
+# 2) 러너 상시 실행
+cd ~/actions-runner && ./run.sh
+# 또는: ./svc.sh install && ./svc.sh start
+```
+
+워크플로: [`.github/workflows/self-heal.yml`](.github/workflows/self-heal.yml)  
+- push / PR / 수동 실행 시 baseline 테스트 + 치유 케이스 3종 평가  
+- GitHub → Actions에서 로그·아티팩트(`heal-eval-report`) 확인  
+
+러너 상태: https://github.com/hyeok-boop/self-healing-llm/settings/actions/runners
+
+## 한계 / 다음에 할 일
+
+- 지금은 지역 선택 픽스처 기준 (Flutter web 실앱 연결은 확장 가능)
+- 실패 이력을 쌓아 “자주 깨지는 셀렉터” 통계내면 QA 관점에서 더 쓸모 있음
