@@ -1,0 +1,77 @@
+name: self-heal
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  heal-demo:
+    # M1에 등록한 self-hosted runner에서 실행 → localhost Ollama 사용
+    runs-on: self-hosted
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Ollama
+        run: |
+          curl -sf http://127.0.0.1:11434/api/tags >/dev/null \
+            || (echo "Ollama is not running on this runner. Start the Ollama app first." && exit 1)
+
+      - name: Setup Python venv + deps
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/node-v22.17.0-darwin-arm64/bin:$HOME/.local/python312/python/bin:$PATH"
+          if [ ! -d .venv ]; then
+            python3 -m venv .venv
+          fi
+          source .venv/bin/activate
+          pip install -q -r requirements.txt
+          playwright install chromium
+
+      - name: Setup Node API deps
+        run: |
+          export PATH="$HOME/.local/node-v22.17.0-darwin-arm64/bin:$PATH"
+          cd server && npm install --silent
+
+      - name: Start failure API
+        run: |
+          export PATH="$HOME/.local/node-v22.17.0-darwin-arm64/bin:$PATH"
+          cd server
+          nohup node index.js > /tmp/self-heal-api.log 2>&1 &
+          echo $! > /tmp/self-heal-api.pid
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3001/health && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:3001/health
+
+      - name: Baseline Playwright test
+        run: |
+          export PATH="$HOME/.local/python312/python/bin:$PATH"
+          source .venv/bin/activate
+          pytest tests/test_region_heal.py -v
+
+      - name: Heal case evaluation (3 scenarios)
+        run: |
+          export PATH="$HOME/.local/python312/python/bin:$PATH"
+          source .venv/bin/activate
+          python scripts/eval_heal_cases.py
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heal-eval-report
+          path: docs/heal-eval-report.json
+          if-no-files-found: ignore
+
+      - name: Stop failure API
+        if: always()
+        run: |
+          if [ -f /tmp/self-heal-api.pid ]; then
+            kill "$(cat /tmp/self-heal-api.pid)" 2>/dev/null || true
+          fi
