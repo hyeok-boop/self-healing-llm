@@ -1,5 +1,6 @@
 {
   "region_tokyo": "[data-testid='region-tokyo']",
-  "region_osaka": "[data-testid='region-osaka']",
+  "region_osaka": "#region-osaka",
+  "tokyo_card": "a.card[href='#tokyo']",
   "selected_result": "#result"
 }
