@@ -1,0 +1,3 @@
+[
+  "tests/test_region_heal.py::test_select_tokyo_region"
+]
