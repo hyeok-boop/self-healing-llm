@@ -10,7 +10,11 @@ FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "region_selectio
 
 
 def test_select_tokyo_region(page):
-    """Click 도쿄 — if data-testid was renamed, heal selectors.json once and retry."""
+    """Click 도쿄 — heal at most once, then retry.
+
+    Early version retried forever when the model returned a bad selector.
+    Now heal_selector enforces a single attempt + DOM existence check.
+    """
     page.goto(FIXTURE.as_uri())
     selectors = load_selectors()
     key = "region_tokyo"
