@@ -25,10 +25,11 @@ function buildPrompt({ errorLog, dom, selector, url, testName, intent }) {
 
 규칙:
 - data-testid 있으면 그걸 우선
-- 없으면 #id
+- 없으면 #id 또는 [data-region="..."] 같은 속성
 - role/텍스트 셀렉터는 쓰지 말 것 (CSS만)
 - category가 selector_not_found 또는 셀렉터 관련 timeout이 아니면 suggested_selector는 ""
 - 확신이 없으면 suggested_selector는 "" 이고 confidence는 낮게
+- id가 바뀐 것 같으면 DOM에 남은 id/data-* 값을 보고 새 CSS를 적을 것
 
 의도: ${intent || 'unknown'}
 테스트: ${testName || 'unknown'}
