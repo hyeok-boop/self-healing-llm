@@ -1,4 +1,4 @@
-"""Mutate fixtures, run one-shot heal, report success rate for portfolio cases."""
+"""픽스처를 일부러 깨뜨린 뒤 치유되는지 세 가지 케이스로 확인."""
 from __future__ import annotations
 
 import json
