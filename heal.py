@@ -10,9 +10,9 @@ ROOT = Path(__file__).resolve().parent
 SELECTORS_PATH = ROOT / "selectors.json"
 FAILURE_API_URL = "http://127.0.0.1:3001/api/test-failure"
 
-# Blindly applying every LLM suggestion caused bad patches during early demos.
+# LLM 제안을 무조건 저장하면 틀린 셀렉터가 들어감.
 MIN_CONFIDENCE = 0.6
-# One heal attempt per selector key — prevents retry storms when the model loops.
+# 같은 키로 치유를 여러 번 돌리면 실패가 반복됨.
 MAX_HEAL_ATTEMPTS = 1
 
 _heal_attempts: dict[str, int] = {}
