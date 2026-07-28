@@ -38,10 +38,10 @@ def mutate_testid(html: str) -> str:
 
 
 def mutate_id(html: str) -> str:
-    # id만 바꾸고 data-testid는 제거 → #city-osaka 또는 텍스트로만 복구 가능
+    # id 변경. testid는 제거하고 data-region만 남겨 복구 단서를 준다.
     return html.replace(
         'id="region-osaka" data-testid="region-osaka"',
-        'id="city-osaka"',
+        'id="city-osaka" data-region="osaka"',
     )
 
 
