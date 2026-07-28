@@ -4,7 +4,7 @@ Playwright 테스트가 셀렉터 때문에 실패하면, 맥에 띄운 Ollama�
 맞으면 `selectors.json`에 저장하고 한 번 더 돌려 봅니다.
 
 대상은 토리닥(Japan) 앱의 지역 선택 화면입니다.
-모델을 따로 학습시킨 게 아닙니다. 이미 있는 모델을 로컬에서만 돌립니다.
+파인튜닝 없이, 로컬 Ollama로만 돌립니다.
 
 ## 데모
 
@@ -75,8 +75,7 @@ chmod +x setup.sh run.sh scripts/*.sh
 
 ## CI
 
-Actions 클라우드 러너는 이 맥의 Ollama(`localhost:11434`)에 못 붙습니다.
-그래서 이 맥을 self-hosted runner로 씁니다.
+로컬 Ollama를 그대로 쓰려고 GitHub Actions **self-hosted runner**(이 M1)에 붙였습니다.
 
 ```bash
 ./scripts/setup_runner.sh
@@ -86,8 +85,3 @@ cd ~/actions-runner && ./run.sh
 - 워크플로: `.github/workflows/self-heal.yml`
 - 러너: https://github.com/hyeok-boop/self-healing-llm/settings/actions/runners
 - 실행 로그: https://github.com/hyeok-boop/self-healing-llm/actions
-
-## 아직
-
-- 지금은 HTML 픽스처 기준. Flutter web 실앱에 붙이는 건 다음 단계
-- 실패 로그를 쌓아서 자주 깨지는 셀렉터를 보는 건 나중에
