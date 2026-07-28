@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
-# 포트폴리오 녹화용 — 터미널에서 직접 실행
-# 사용법:
-#   ./clip.sh 1
-#   ./clip.sh 2
-#   ./clip.sh 3
-#   ./clip.sh 4
-#   ./clip.sh reset   # 픽스처/셀렉터 원복
+# 화면 녹화할 때 쓰는 클립. ./clip.sh 1 ~ 4
+#   ./clip.sh reset  → 처음 상태로
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
