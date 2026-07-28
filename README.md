@@ -1,6 +1,6 @@
 # 자가치유 LLM
 
-Playwright 테스트가 셀렉터 때문에 실패하면, 맥에 띄운 Ollama가 DOM을 보고 쓸 만한 셀렉터를 고릅니다.
+Playwright 테스트가 셀렉터 때문에 실패하면, 맥에 띄운 Ollama가 DOM을 보고 셀렉터를 선택합니다.
 맞으면 `selectors.json`에 저장하고 한 번 더 돌려 봅니다.
 
 대상은 토리닥(Japan) 앱의 지역 선택 화면입니다.
@@ -12,7 +12,7 @@ https://github.com/hyeok-boop/self-healing-llm/raw/main/docs/demo/self-heal-demo
 
 1. 테스트 통과
 2. `data-testid`만 바꿔서 깨뜨림
-3. 실패 → Ollama가 DOM에서 셀렉터 고름 → 저장
+3. 실패 → Ollama가 DOM에서 셀렉터 선택 → 저장
 4. 다시 돌려서 통과
 
 ## 흐름
