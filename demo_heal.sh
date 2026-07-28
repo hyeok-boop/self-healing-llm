@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Portfolio demo: break Tokyo selector → self-heal → pass
+# 셀렉터 깨뜨린 뒤 치유되는지 한 번에 확인
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
