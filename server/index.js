@@ -28,7 +28,8 @@ Rules for suggested_selector:
 - Prefer [data-testid="..."] if present
 - Else prefer #id, then button/a text via role is NOT allowed here — CSS only
 - Must match an element related to the user intent / broken selector
-- If unsure, return empty string
+- If category is not selector_not_found (or a selector-related timeout), set suggested_selector to ""
+- If unsure, return empty string and low confidence
 
 User intent: ${intent || 'unknown'}
 Test: ${testName || 'unknown'}
