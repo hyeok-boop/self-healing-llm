@@ -36,7 +36,7 @@ heal.py  →  API (:3001)  →  Ollama (:11434)
 | 케이스 | 변경점 | 결과 |
 |--------|--------|------|
 | testid_rename | data-testid 이름 변경 | 통과 |
-| id_rename | id 변경, testid 제거 | 통과 |
+| id_rename | id 변경, testid 제거 (data-region 유지) | 통과 |
 | structure_move | class / DOM 구조 변경 | 통과 |
 
 3/3 통과. 자세한 값은 `docs/heal-eval-report.json`.
