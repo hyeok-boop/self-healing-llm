@@ -11,35 +11,34 @@ app.use(express.json({ limit: '2mb' }));
 
 function buildPrompt({ errorLog, dom, selector, url, testName, intent }) {
   const domSnippet = typeof dom === 'string' ? dom.slice(0, 8000) : '';
-  return `You are a Playwright self-healing assistant for a travel app (Toridoc / Japan).
+  return `Playwright 실패 로그와 DOM을 보고, 쓸 CSS 셀렉터를 JSON으로만 답하세요.
+앱: 토리닥(여행/지도).
 
-Goal: when a selector breaks after a UI rename, propose a replacement CSS/Playwright selector from the DOM.
-
-Respond with ONLY valid JSON:
+반드시 이 JSON만:
 {
   "category": "selector_not_found|timeout|navigation|assertion|network|auth|unknown",
-  "summary": "one sentence in Korean",
-  "suggested_fix": "concrete fix in Korean",
-  "suggested_selector": "a CSS selector that finds the intended element, or empty string",
+  "summary": "한국어 한 줄",
+  "suggested_fix": "한국어로 고치는 방법",
+  "suggested_selector": "CSS 셀렉터. 모르면 빈 문자열",
   "confidence": 0.0
 }
 
-Rules for suggested_selector:
-- Prefer [data-testid="..."] if present
-- Else prefer #id, then button/a text via role is NOT allowed here — CSS only
-- Must match an element related to the user intent / broken selector
-- If category is not selector_not_found (or a selector-related timeout), set suggested_selector to ""
-- If unsure, return empty string and low confidence
+규칙:
+- data-testid 있으면 그걸 우선
+- 없으면 #id
+- role/텍스트 셀렉터는 쓰지 말 것 (CSS만)
+- category가 selector_not_found 또는 셀렉터 관련 timeout이 아니면 suggested_selector는 ""
+- 확신이 없으면 suggested_selector는 "" 이고 confidence는 낮게
 
-User intent: ${intent || 'unknown'}
-Test: ${testName || 'unknown'}
+의도: ${intent || 'unknown'}
+테스트: ${testName || 'unknown'}
 URL: ${url || 'unknown'}
-Broken selector: ${selector || 'unknown'}
+깨진 셀렉터: ${selector || 'unknown'}
 
-Error:
+에러:
 ${errorLog || 'none'}
 
-DOM snippet:
+DOM:
 ${domSnippet}`;
 }
 
